@@ -308,7 +308,7 @@
     }
     function restoreSingle(m) {
         var el = document.getElementById(m + 'Entry');
-        if(lastInputs[m] !== undefined) el.value = lastInputs[m];
+        if(lastInputs[m] !== undefined && lastInputs[m] !== '') el.value = lastInputs[m];
     }
     function restoreAll() { for(var m in lastInputs) restoreSingle(m); }
     function clearResult() {
@@ -334,22 +334,37 @@
         container.innerHTML = html;
     }
 
-    // ========== 生成记录（去掉弹窗） ==========
+    // ========== 生成记录（修改核心：空输入使用上次值，生成后输入框留空） ==========
     function recordToday() {
         loadData();
         var t = getTotal();
-        var b = parseInt(document.getElementById('blackEntry').value) || 0;
-        var y = parseInt(document.getElementById('yellowEntry').value) || 0;
-        var bl = parseInt(document.getElementById('blueEntry').value) || 0;
-        var p = parseInt(document.getElementById('purpleEntry').value) || 0;
-        if(isNaN(b)||isNaN(y)||isNaN(bl)||isNaN(p)) { alert('请输入有效整数'); return; }
+
+        // 获取当前输入值，如果是空或非数字则尝试使用上次输入值
+        var rawBlack = document.getElementById('blackEntry').value.trim();
+        var rawYellow = document.getElementById('yellowEntry').value.trim();
+        var rawBlue = document.getElementById('blueEntry').value.trim();
+        var rawPurple = document.getElementById('purpleEntry').value.trim();
+
+        var b = (rawBlack !== '' && !isNaN(parseInt(rawBlack))) ? parseInt(rawBlack)
+                : (lastInputs.black !== '' && !isNaN(parseInt(lastInputs.black)) ? parseInt(lastInputs.black) : 0);
+        var y = (rawYellow !== '' && !isNaN(parseInt(rawYellow))) ? parseInt(rawYellow)
+                : (lastInputs.yellow !== '' && !isNaN(parseInt(lastInputs.yellow)) ? parseInt(lastInputs.yellow) : 0);
+        var bl = (rawBlue !== '' && !isNaN(parseInt(rawBlue))) ? parseInt(rawBlue)
+                : (lastInputs.blue !== '' && !isNaN(parseInt(lastInputs.blue)) ? parseInt(lastInputs.blue) : 0);
+        var p = (rawPurple !== '' && !isNaN(parseInt(rawPurple))) ? parseInt(rawPurple)
+                : (lastInputs.purple !== '' && !isNaN(parseInt(lastInputs.purple)) ? parseInt(lastInputs.purple) : 0);
+
         var bd = b - t.black, yd = y - t.yellow, bld = bl - t.blue, pd = p - t.purple;
+
         var date = document.getElementById('dateVar').value.trim() || (new Date().getMonth()+1) + '.' + new Date().getDate();
         var dur = document.getElementById('timeInput').value.trim();
         var poke = document.getElementById('pokemonInput').value.trim();
         var reg = document.getElementById('regionInput').value.trim();
         var note = document.getElementById('noteInput').value.trim();
+
+        // 更新 lastInputs 为本次实际使用的值
         lastInputs.black = b; lastInputs.yellow = y; lastInputs.blue = bl; lastInputs.purple = p;
+
         var now = new Date();
         var time = padZero(now.getHours()) + ':' + padZero(now.getMinutes()) + ':' + padZero(now.getSeconds());
         var rec = {
@@ -367,10 +382,11 @@
         data.push(rec);
         updateTotal(b, y, bl, p);
         saveData();
+
+        // 清空输入框（使其显示为空，但 lastInputs 已保存了实际值）
         clearInputs();
-        refreshTable();   // 直接显示结果
+        refreshTable();
         updateTotalLabel();
-        // 不再使用 alert
     }
 
     // ========== 总量页面 ==========
@@ -506,7 +522,7 @@
         buildHistory();
     }
     function clearAllHistory() {
-        if(!confirm('清空全部历史')) return;
+        if(!confirm('清空全部历史？总量不变。')) return;
         loadData();
         var recs = data.filter(function(r){ return r.type === 'record'; });
         deletedRecords = deletedRecords.concat(recs);
