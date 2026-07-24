@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>矿物跑量统计 · 牙牙大王</title>
     <style>
         :root {
@@ -16,6 +16,8 @@
             overflow: hidden;
             font-family: "微软雅黑", "Microsoft YaHei", sans-serif;
             background: white;
+            position: fixed;
+            touch-action: manipulation;
         }
         body { display: flex; justify-content: center; align-items: center; }
         #app-container {
@@ -27,6 +29,7 @@
             overflow: hidden;
             user-select: none;
             color: black;
+            margin: 0 auto;
         }
         .page {
             position: absolute; top:0; left:0; width:100%; height:100%;
@@ -48,28 +51,30 @@
         #mainContent::-webkit-scrollbar { display: none; }
 
         .icon-block {
-            display: inline-block; width: 48px; height: 48px;
-            border: 1px solid #ccc; border-radius: 4px;
+            display: inline-block; width: 56px; height: 56px;
+            border: 1px solid #ccc; border-radius: 6px;
         }
         .entry-field {
             font-size: 16px; font-weight: bold; text-align: center;
             border: 1px solid #aaa; padding: 4px; background: white; color: black;
         }
         .restore-btn {
-            font-size: 16px; font-weight: bold; background: #ffb6c1; color: white;
-            border: none; width: 40px; height: 40px; cursor: pointer; border-radius: 4px;
+            font-size: 18px; font-weight: bold; background: #ffb6c1; color: white;
+            border: none; width: 45px; height: 45px; cursor: pointer; border-radius: 6px;
         }
 
+        /* 选择框组件 (放大) */
         .cust-select { position: relative; display: inline-block; }
         .cust-select input {
-            padding: 4px 8px; font-size: 14px; border: 1px solid #aaa;
+            padding: 4px 8px; font-size: 16px; border: 1px solid #aaa;
             text-align: center; background: white; color: black; cursor: pointer;
             box-sizing: border-box;
+            height: 40px;       /* 统一高度 */
         }
         .cust-select .dropdown-btn {
             position: absolute; right: 0; top: 0; height: 100%;
-            width: 24px; background: #eee; border: 1px solid #aaa;
-            border-left: none; cursor: pointer; font-size: 12px;
+            width: 28px; background: #eee; border: 1px solid #aaa;
+            border-left: none; cursor: pointer; font-size: 14px;
             display: flex; align-items: center; justify-content: center;
         }
         .cust-select .options {
@@ -77,7 +82,7 @@
             background: white; border: 1px solid #aaa;
             max-height: 150px; overflow-y: auto; z-index: 20; display: none;
         }
-        .cust-select .options div { padding: 4px 8px; font-size: 14px; cursor: pointer; }
+        .cust-select .options div { padding: 6px 8px; font-size: 15px; cursor: pointer; }
         .cust-select .options div:hover { background: #ffb6c1; }
 
         .result-list {
@@ -138,26 +143,28 @@
                 </div>
             </div>
             <div style="display:flex; justify-content:space-between;">
+                <!-- 左侧列加宽 -->
                 <div style="width:200px;">
-                    <div style="margin-bottom:35px;"><label style="font-weight:bold;font-size:16px;">日期：</label><input id="dateVar" class="entry-field" style="width:80px;" readonly></div>
+                    <div style="margin-bottom:35px;"><label style="font-weight:bold;font-size:16px;">日期：</label><input id="dateVar" class="entry-field" style="width:80px; height:30px;" readonly></div>
                     <div style="margin-bottom:35px;"><label style="font-weight:bold;font-size:16px;">用时：</label>
-                        <div class="cust-select"><input id="timeInput" style="width:80px;height:30px;" onfocus="this.select()"><div class="dropdown-btn" onclick="toggleDropdown(this)">▼</div><div class="options"><div onclick="selectDropdownValue(this)">1h</div><div onclick="selectDropdownValue(this)">2h</div><div onclick="selectDropdownValue(this)">3h</div><div onclick="selectDropdownValue(this)">4h</div><div onclick="selectDropdownValue(this)">5h</div><div onclick="selectDropdownValue(this)">6h</div><div onclick="selectDropdownValue(this)">7h</div><div onclick="selectDropdownValue(this)">8h</div><div onclick="selectDropdownValue(this)">9h</div><div onclick="selectDropdownValue(this)">10h</div></div></div>
+                        <div class="cust-select"><input id="timeInput" style="width:90px;" onfocus="this.select()"><div class="dropdown-btn" onclick="toggleDropdown(this)">▼</div><div class="options"><div onclick="selectDropdownValue(this)">1h</div><div onclick="selectDropdownValue(this)">2h</div><div onclick="selectDropdownValue(this)">3h</div><div onclick="selectDropdownValue(this)">4h</div><div onclick="selectDropdownValue(this)">5h</div><div onclick="selectDropdownValue(this)">6h</div><div onclick="selectDropdownValue(this)">7h</div><div onclick="selectDropdownValue(this)">8h</div><div onclick="selectDropdownValue(this)">9h</div><div onclick="selectDropdownValue(this)">10h</div></div></div>
                     </div>
                     <div style="margin-bottom:35px;"><label style="font-weight:bold;font-size:16px;">精灵：</label>
-                        <div class="cust-select"><input id="pokemonInput" style="width:100px;height:30px;"><div class="dropdown-btn" onclick="toggleDropdown(this)">▼</div><div class="options"><div onclick="selectDropdownValue(this)">六爱</div><div onclick="selectDropdownValue(this)">五爱</div><div onclick="selectDropdownValue(this)">卡六爱</div></div></div>
+                        <div class="cust-select"><input id="pokemonInput" style="width:110px;"><div class="dropdown-btn" onclick="toggleDropdown(this)">▼</div><div class="options"><div onclick="selectDropdownValue(this)">六爱</div><div onclick="selectDropdownValue(this)">五爱</div><div onclick="selectDropdownValue(this)">卡六爱</div></div></div>
                     </div>
                     <div style="margin-bottom:35px;"><label style="font-weight:bold;font-size:16px;">地区：</label>
-                        <div class="cust-select"><input id="regionInput" style="width:120px;height:30px;"><div class="dropdown-btn" onclick="toggleDropdown(this)">▼</div><div class="options"><div onclick="selectDropdownValue(this)">风眠镇</div><div onclick="selectDropdownValue(this)">洛克里安</div><div onclick="selectDropdownValue(this)">淘晶镇</div></div></div>
+                        <div class="cust-select"><input id="regionInput" style="width:140px;"><div class="dropdown-btn" onclick="toggleDropdown(this)">▼</div><div class="options"><div onclick="selectDropdownValue(this)">风眠镇</div><div onclick="selectDropdownValue(this)">洛克里安</div><div onclick="selectDropdownValue(this)">淘晶镇</div></div></div>
                     </div>
                     <div style="margin-bottom:35px;"><label style="font-weight:bold;font-size:16px;">备注：</label>
-                        <input id="noteInput" class="entry-field" style="width:150px; height:30px; font-weight:normal;" placeholder="选填">
+                        <input id="noteInput" class="entry-field" style="width:160px; height:40px; font-weight:normal;" placeholder="选填">
                     </div>
                 </div>
-                <div style="width:240px;">
-                    <div style="margin-bottom:25px;display:flex;align-items:center;"><div class="icon-block" style="background-color:#1a1a1a;"></div><input id="blackEntry" class="entry-field" style="width:120px;height:40px;margin:0 8px;font-size:18px;"><button class="restore-btn" onclick="restoreSingle('black')">↺</button></div>
-                    <div style="margin-bottom:25px;display:flex;align-items:center;"><div class="icon-block" style="background-color:#f1c40f;"></div><input id="yellowEntry" class="entry-field" style="width:120px;height:40px;margin:0 8px;font-size:18px;"><button class="restore-btn" onclick="restoreSingle('yellow')">↺</button></div>
-                    <div style="margin-bottom:25px;display:flex;align-items:center;"><div class="icon-block" style="background-color:#2980b9;"></div><input id="blueEntry" class="entry-field" style="width:120px;height:40px;margin:0 8px;font-size:18px;"><button class="restore-btn" onclick="restoreSingle('blue')">↺</button></div>
-                    <div style="margin-bottom:25px;display:flex;align-items:center;"><div class="icon-block" style="background-color:#8e44ad;"></div><input id="purpleEntry" class="entry-field" style="width:120px;height:40px;margin:0 8px;font-size:18px;"><button class="restore-btn" onclick="restoreSingle('purple')">↺</button></div>
+                <!-- 右侧列相应缩小以适应总宽 -->
+                <div style="width:260px;">
+                    <div style="margin-bottom:35px;display:flex;align-items:center;"><div class="icon-block" style="background-color:#1a1a1a;"></div><input id="blackEntry" class="entry-field" style="width:160px;height:55px;margin:0 8px;font-size:22px;"><button class="restore-btn" onclick="restoreSingle('black')">↺</button></div>
+                    <div style="margin-bottom:35px;display:flex;align-items:center;"><div class="icon-block" style="background-color:#f1c40f;"></div><input id="yellowEntry" class="entry-field" style="width:160px;height:55px;margin:0 8px;font-size:22px;"><button class="restore-btn" onclick="restoreSingle('yellow')">↺</button></div>
+                    <div style="margin-bottom:35px;display:flex;align-items:center;"><div class="icon-block" style="background-color:#2980b9;"></div><input id="blueEntry" class="entry-field" style="width:160px;height:55px;margin:0 8px;font-size:22px;"><button class="restore-btn" onclick="restoreSingle('blue')">↺</button></div>
+                    <div style="margin-bottom:35px;display:flex;align-items:center;"><div class="icon-block" style="background-color:#8e44ad;"></div><input id="purpleEntry" class="entry-field" style="width:160px;height:55px;margin:0 8px;font-size:22px;"><button class="restore-btn" onclick="restoreSingle('purple')">↺</button></div>
                 </div>
             </div>
             <div style="display:flex;justify-content:space-around;margin:25px 0;">
@@ -334,12 +341,11 @@
         container.innerHTML = html;
     }
 
-    // ========== 生成记录（修改核心：空输入使用上次值，生成后输入框留空） ==========
+    // ========== 生成记录 ==========
     function recordToday() {
         loadData();
         var t = getTotal();
 
-        // 获取当前输入值，如果是空或非数字则尝试使用上次输入值
         var rawBlack = document.getElementById('blackEntry').value.trim();
         var rawYellow = document.getElementById('yellowEntry').value.trim();
         var rawBlue = document.getElementById('blueEntry').value.trim();
@@ -362,7 +368,6 @@
         var reg = document.getElementById('regionInput').value.trim();
         var note = document.getElementById('noteInput').value.trim();
 
-        // 更新 lastInputs 为本次实际使用的值
         lastInputs.black = b; lastInputs.yellow = y; lastInputs.blue = bl; lastInputs.purple = p;
 
         var now = new Date();
@@ -382,8 +387,6 @@
         data.push(rec);
         updateTotal(b, y, bl, p);
         saveData();
-
-        // 清空输入框（使其显示为空，但 lastInputs 已保存了实际值）
         clearInputs();
         refreshTable();
         updateTotalLabel();
@@ -545,7 +548,6 @@
         buildHistory();
     }
 
-    // ========== 下拉框 ==========
     function toggleDropdown(btn) {
         var p = btn.parentNode, o = p.querySelector('.options');
         if(o) {
@@ -566,7 +568,6 @@
         o.style.display = 'none';
     }
 
-    // ========== 自适应缩放 ==========
     function resizeApp() {
         var sw = window.innerWidth, sh = window.innerHeight;
         var scale = Math.min(sw / 480, sh / 800);
@@ -574,7 +575,6 @@
     }
     window.addEventListener('resize', resizeApp);
 
-    // ========== 启动 ==========
     window.onload = function() {
         resizeApp();
         loadData();
