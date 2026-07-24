@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, shrink-to-fit=no">
     <title>矿物跑量统计 · 牙牙大王</title>
     <style>
         :root {
@@ -17,19 +17,23 @@
             font-family: "微软雅黑", "Microsoft YaHei", sans-serif;
             background: white;
             position: fixed;
-            touch-action: manipulation;
+            top: 0; left: 0;
         }
-        body { display: flex; justify-content: center; align-items: center; }
-        #app-container {
-            width: 480px; height: 800px;
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #app-wrapper {
+            width: 480px;
+            height: 800px;
             position: relative;
             transform: scale(var(--scale));
-            transform-origin: top left;
+            transform-origin: center center;
             background: white;
             overflow: hidden;
             user-select: none;
             color: black;
-            margin: 0 auto;
         }
         .page {
             position: absolute; top:0; left:0; width:100%; height:100%;
@@ -46,6 +50,7 @@
             position: relative; z-index: 1; width: 100%; height: 100%;
             padding: 10px;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
             -ms-overflow-style: none; scrollbar-width: none;
         }
         #mainContent::-webkit-scrollbar { display: none; }
@@ -63,13 +68,12 @@
             border: none; width: 45px; height: 45px; cursor: pointer; border-radius: 6px;
         }
 
-        /* 选择框组件 (放大) */
         .cust-select { position: relative; display: inline-block; }
         .cust-select input {
             padding: 4px 8px; font-size: 16px; border: 1px solid #aaa;
             text-align: center; background: white; color: black; cursor: pointer;
             box-sizing: border-box;
-            height: 40px;       /* 统一高度 */
+            height: 40px;
         }
         .cust-select .dropdown-btn {
             position: absolute; right: 0; top: 0; height: 100%;
@@ -103,7 +107,6 @@
 
         .total-entry { width: 80px; text-align: center; padding: 4px; font-size: 14px; }
 
-        /* 历史页面 */
         #historyContent {
             flex: 1; overflow-y: auto;
             -ms-overflow-style: none; scrollbar-width: none;
@@ -129,98 +132,96 @@
     </style>
 </head>
 <body>
-<div id="app-container">
-
-    <!-- 主界面 -->
-    <div id="mainPage" class="page active">
-        <div id="bgLayer"></div>
-        <div id="mainContent">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:70px; margin-top:60px;">
-                <button id="totalBtn" style="background:white; padding:8px 16px; font-weight:bold; font-size:20px; height:48px; line-height:1;" onclick="showPage('totalPage')">矿物总量：0</button>
-                <div style="margin-right:45px; display:flex; gap:10px; align-items:center;">
-                    <button style="font-size:30px; background:transparent; border:none; cursor:pointer; width:40px; height:40px; line-height:1;" onclick="showPage('settingsPage')">⚙️</button>
-                    <button style="font-size:30px; background:transparent; border:none; cursor:pointer; width:40px; height:40px; line-height:1;" onclick="showPage('historyPage')">⏰</button>
-                </div>
-            </div>
-            <div style="display:flex; justify-content:space-between;">
-                <!-- 左侧列加宽 -->
-                <div style="width:200px;">
-                    <div style="margin-bottom:35px;"><label style="font-weight:bold;font-size:16px;">日期：</label><input id="dateVar" class="entry-field" style="width:80px; height:30px;" readonly></div>
-                    <div style="margin-bottom:35px;"><label style="font-weight:bold;font-size:16px;">用时：</label>
-                        <div class="cust-select"><input id="timeInput" style="width:90px;" onfocus="this.select()"><div class="dropdown-btn" onclick="toggleDropdown(this)">▼</div><div class="options"><div onclick="selectDropdownValue(this)">1h</div><div onclick="selectDropdownValue(this)">2h</div><div onclick="selectDropdownValue(this)">3h</div><div onclick="selectDropdownValue(this)">4h</div><div onclick="selectDropdownValue(this)">5h</div><div onclick="selectDropdownValue(this)">6h</div><div onclick="selectDropdownValue(this)">7h</div><div onclick="selectDropdownValue(this)">8h</div><div onclick="selectDropdownValue(this)">9h</div><div onclick="selectDropdownValue(this)">10h</div></div></div>
-                    </div>
-                    <div style="margin-bottom:35px;"><label style="font-weight:bold;font-size:16px;">精灵：</label>
-                        <div class="cust-select"><input id="pokemonInput" style="width:110px;"><div class="dropdown-btn" onclick="toggleDropdown(this)">▼</div><div class="options"><div onclick="selectDropdownValue(this)">六爱</div><div onclick="selectDropdownValue(this)">五爱</div><div onclick="selectDropdownValue(this)">卡六爱</div></div></div>
-                    </div>
-                    <div style="margin-bottom:35px;"><label style="font-weight:bold;font-size:16px;">地区：</label>
-                        <div class="cust-select"><input id="regionInput" style="width:140px;"><div class="dropdown-btn" onclick="toggleDropdown(this)">▼</div><div class="options"><div onclick="selectDropdownValue(this)">风眠镇</div><div onclick="selectDropdownValue(this)">洛克里安</div><div onclick="selectDropdownValue(this)">淘晶镇</div></div></div>
-                    </div>
-                    <div style="margin-bottom:35px;"><label style="font-weight:bold;font-size:16px;">备注：</label>
-                        <input id="noteInput" class="entry-field" style="width:160px; height:40px; font-weight:normal;" placeholder="选填">
+<div id="app-wrapper">
+    <div id="app-container">
+        <!-- 主界面 -->
+        <div id="mainPage" class="page active">
+            <div id="bgLayer"></div>
+            <div id="mainContent">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:70px; margin-top:60px;">
+                    <button id="totalBtn" style="background:white; padding:8px 16px; font-weight:bold; font-size:20px; height:48px; line-height:1;" onclick="showPage('totalPage')">矿物总量：0</button>
+                    <div style="margin-right:45px; display:flex; gap:10px; align-items:center;">
+                        <button style="font-size:30px; background:transparent; border:none; cursor:pointer; width:40px; height:40px; line-height:1;" onclick="showPage('settingsPage')">⚙️</button>
+                        <button style="font-size:30px; background:transparent; border:none; cursor:pointer; width:40px; height:40px; line-height:1;" onclick="showPage('historyPage')">⏰</button>
                     </div>
                 </div>
-                <!-- 右侧列相应缩小以适应总宽 -->
-                <div style="width:260px;">
-                    <div style="margin-bottom:35px;display:flex;align-items:center;"><div class="icon-block" style="background-color:#1a1a1a;"></div><input id="blackEntry" class="entry-field" style="width:160px;height:55px;margin:0 8px;font-size:22px;"><button class="restore-btn" onclick="restoreSingle('black')">↺</button></div>
-                    <div style="margin-bottom:35px;display:flex;align-items:center;"><div class="icon-block" style="background-color:#f1c40f;"></div><input id="yellowEntry" class="entry-field" style="width:160px;height:55px;margin:0 8px;font-size:22px;"><button class="restore-btn" onclick="restoreSingle('yellow')">↺</button></div>
-                    <div style="margin-bottom:35px;display:flex;align-items:center;"><div class="icon-block" style="background-color:#2980b9;"></div><input id="blueEntry" class="entry-field" style="width:160px;height:55px;margin:0 8px;font-size:22px;"><button class="restore-btn" onclick="restoreSingle('blue')">↺</button></div>
-                    <div style="margin-bottom:35px;display:flex;align-items:center;"><div class="icon-block" style="background-color:#8e44ad;"></div><input id="purpleEntry" class="entry-field" style="width:160px;height:55px;margin:0 8px;font-size:22px;"><button class="restore-btn" onclick="restoreSingle('purple')">↺</button></div>
+                <div style="display:flex; justify-content:space-between;">
+                    <div style="width:200px;">
+                        <div style="margin-bottom:35px;"><label style="font-weight:bold;font-size:16px;">日期：</label><input id="dateVar" class="entry-field" style="width:80px; height:30px;" readonly></div>
+                        <div style="margin-bottom:35px;"><label style="font-weight:bold;font-size:16px;">用时：</label>
+                            <div class="cust-select"><input id="timeInput" style="width:90px;" onfocus="this.select();fixInputFocus()"><div class="dropdown-btn" onclick="toggleDropdown(this)">▼</div><div class="options"><div onclick="selectDropdownValue(this)">1h</div><div onclick="selectDropdownValue(this)">2h</div><div onclick="selectDropdownValue(this)">3h</div><div onclick="selectDropdownValue(this)">4h</div><div onclick="selectDropdownValue(this)">5h</div><div onclick="selectDropdownValue(this)">6h</div><div onclick="selectDropdownValue(this)">7h</div><div onclick="selectDropdownValue(this)">8h</div><div onclick="selectDropdownValue(this)">9h</div><div onclick="selectDropdownValue(this)">10h</div></div></div>
+                        </div>
+                        <div style="margin-bottom:35px;"><label style="font-weight:bold;font-size:16px;">精灵：</label>
+                            <div class="cust-select"><input id="pokemonInput" style="width:110px;" onfocus="fixInputFocus()"><div class="dropdown-btn" onclick="toggleDropdown(this)">▼</div><div class="options"><div onclick="selectDropdownValue(this)">六爱</div><div onclick="selectDropdownValue(this)">五爱</div><div onclick="selectDropdownValue(this)">卡六爱</div></div></div>
+                        </div>
+                        <div style="margin-bottom:35px;"><label style="font-weight:bold;font-size:16px;">地区：</label>
+                            <div class="cust-select"><input id="regionInput" style="width:140px;" onfocus="fixInputFocus()"><div class="dropdown-btn" onclick="toggleDropdown(this)">▼</div><div class="options"><div onclick="selectDropdownValue(this)">风眠镇</div><div onclick="selectDropdownValue(this)">洛克里安</div><div onclick="selectDropdownValue(this)">淘晶镇</div></div></div>
+                        </div>
+                        <div style="margin-bottom:35px;"><label style="font-weight:bold;font-size:16px;">备注：</label>
+                            <input id="noteInput" class="entry-field" style="width:160px; height:40px; font-weight:normal;" placeholder="选填" onfocus="fixInputFocus()">
+                        </div>
+                    </div>
+                    <div style="width:260px;">
+                        <div style="margin-bottom:35px;display:flex;align-items:center;"><div class="icon-block" style="background-color:#1a1a1a;"></div><input id="blackEntry" class="entry-field" style="width:160px;height:55px;margin:0 8px;font-size:22px;" onfocus="fixInputFocus()"><button class="restore-btn" onclick="restoreSingle('black')">↺</button></div>
+                        <div style="margin-bottom:35px;display:flex;align-items:center;"><div class="icon-block" style="background-color:#f1c40f;"></div><input id="yellowEntry" class="entry-field" style="width:160px;height:55px;margin:0 8px;font-size:22px;" onfocus="fixInputFocus()"><button class="restore-btn" onclick="restoreSingle('yellow')">↺</button></div>
+                        <div style="margin-bottom:35px;display:flex;align-items:center;"><div class="icon-block" style="background-color:#2980b9;"></div><input id="blueEntry" class="entry-field" style="width:160px;height:55px;margin:0 8px;font-size:22px;" onfocus="fixInputFocus()"><button class="restore-btn" onclick="restoreSingle('blue')">↺</button></div>
+                        <div style="margin-bottom:35px;display:flex;align-items:center;"><div class="icon-block" style="background-color:#8e44ad;"></div><input id="purpleEntry" class="entry-field" style="width:160px;height:55px;margin:0 8px;font-size:22px;" onfocus="fixInputFocus()"><button class="restore-btn" onclick="restoreSingle('purple')">↺</button></div>
+                    </div>
+                </div>
+                <div style="display:flex;justify-content:space-around;margin:25px 0;">
+                    <button style="background:#dcdcdc;color:black;padding:10px 18px;font-weight:bold;" onclick="clearResult()">清空表格</button>
+                    <button style="background:#ff69b4;color:white;padding:10px 18px;font-weight:bold;" onclick="recordToday()">生成</button>
+                    <button style="background:#ffb6c1;color:white;padding:10px 18px;font-weight:bold;" onclick="restoreAll()">全部恢复</button>
+                </div>
+                <div id="resultContainer" class="result-list"></div>
+            </div>
+        </div>
+
+        <!-- 总量页 -->
+        <div id="totalPage" class="page" style="background:#fff0f5; padding:60px 20px 20px 20px;">
+            <h3 style="text-align:center;">初始化 / 修改库存</h3>
+            <p style="text-align:center;">请输入当前四种矿物数量：</p>
+            <div style="display:flex; flex-direction:column; align-items:center; margin:15px 0;">
+                <div style="margin:5px;"><label>黑矿</label><input id="totalBlack" class="total-entry" type="number"></div>
+                <div style="margin:5px;"><label>黄矿</label><input id="totalYellow" class="total-entry" type="number"></div>
+                <div style="margin:5px;"><label>蓝矿</label><input id="totalBlue" class="total-entry" type="number"></div>
+                <div style="margin:5px;"><label>紫矿</label><input id="totalPurple" class="total-entry" type="number"></div>
+            </div>
+            <div style="display:flex; justify-content:center; gap:15px;">
+                <button style="background:#ffb6c1; color:white; padding:8px 20px;" onclick="submitTotal()">确认修改</button>
+                <button style="background:#ccc; padding:8px 20px;" onclick="showPage('mainPage')">返回</button>
+            </div>
+        </div>
+
+        <!-- 设置页 -->
+        <div id="settingsPage" class="page" style="background:white; padding:60px 20px 20px 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3>⚙️ 设置</h3>
+                <button style="background:#ccc; padding:5px 15px;" onclick="showPage('mainPage')">返回</button>
+            </div>
+            <div>
+                <strong>数据管理：</strong>
+                <button style="background:#e74c3c; color:white; padding:8px 16px; margin-top:10px;" onclick="clearAllData()">清空所有数据（含总量）</button>
+            </div>
+        </div>
+
+        <!-- 历史页 -->
+        <div id="historyPage" class="page" style="background:white; padding:60px 10px 10px 10px; flex-direction:column;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h3>📅 历史跑量</h3>
+                <button style="background:#ccc; padding:5px 15px;" onclick="showPage('mainPage')">返回</button>
+            </div>
+            <div style="display:flex; align-items:center; margin-bottom:5px;">
+                <label><input type="checkbox" id="selectAllCheck" onclick="toggleSelectAllHistory(this)"> 全选</label>
+                <div style="margin-left:auto; display:flex; gap:5px;">
+                    <button style="background:#f39c12; color:white; padding:4px 10px;" onclick="deleteSelectedHistory()">删除选中</button>
+                    <button style="background:#e74c3c; color:white; padding:4px 10px;" onclick="clearAllHistory()">清空全部历史</button>
+                    <button style="background:#2ecc71; color:white; padding:4px 10px;" onclick="restoreDeletedHistory()">恢复最近删除</button>
                 </div>
             </div>
-            <div style="display:flex;justify-content:space-around;margin:25px 0;">
-                <button style="background:#dcdcdc;color:black;padding:10px 18px;font-weight:bold;" onclick="clearResult()">清空表格</button>
-                <button style="background:#ff69b4;color:white;padding:10px 18px;font-weight:bold;" onclick="recordToday()">生成</button>
-                <button style="background:#ffb6c1;color:white;padding:10px 18px;font-weight:bold;" onclick="restoreAll()">全部恢复</button>
-            </div>
-            <div id="resultContainer" class="result-list"></div>
+            <div id="historyContent" style="flex:1; overflow-y:auto;"></div>
         </div>
     </div>
-
-    <!-- 总量页 -->
-    <div id="totalPage" class="page" style="background:#fff0f5; padding:60px 20px 20px 20px;">
-        <h3 style="text-align:center;">初始化 / 修改库存</h3>
-        <p style="text-align:center;">请输入当前四种矿物数量：</p>
-        <div style="display:flex; flex-direction:column; align-items:center; margin:15px 0;">
-            <div style="margin:5px;"><label>黑矿</label><input id="totalBlack" class="total-entry" type="number"></div>
-            <div style="margin:5px;"><label>黄矿</label><input id="totalYellow" class="total-entry" type="number"></div>
-            <div style="margin:5px;"><label>蓝矿</label><input id="totalBlue" class="total-entry" type="number"></div>
-            <div style="margin:5px;"><label>紫矿</label><input id="totalPurple" class="total-entry" type="number"></div>
-        </div>
-        <div style="display:flex; justify-content:center; gap:15px;">
-            <button style="background:#ffb6c1; color:white; padding:8px 20px;" onclick="submitTotal()">确认修改</button>
-            <button style="background:#ccc; padding:8px 20px;" onclick="showPage('mainPage')">返回</button>
-        </div>
-    </div>
-
-    <!-- 设置页 -->
-    <div id="settingsPage" class="page" style="background:white; padding:60px 20px 20px 20px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h3>⚙️ 设置</h3>
-            <button style="background:#ccc; padding:5px 15px;" onclick="showPage('mainPage')">返回</button>
-        </div>
-        <div>
-            <strong>数据管理：</strong>
-            <button style="background:#e74c3c; color:white; padding:8px 16px; margin-top:10px;" onclick="clearAllData()">清空所有数据（含总量）</button>
-        </div>
-    </div>
-
-    <!-- 历史页 -->
-    <div id="historyPage" class="page" style="background:white; padding:60px 10px 10px 10px; flex-direction:column;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <h3>📅 历史跑量</h3>
-            <button style="background:#ccc; padding:5px 15px;" onclick="showPage('mainPage')">返回</button>
-        </div>
-        <div style="display:flex; align-items:center; margin-bottom:5px;">
-            <label><input type="checkbox" id="selectAllCheck" onclick="toggleSelectAllHistory(this)"> 全选</label>
-            <div style="margin-left:auto; display:flex; gap:5px;">
-                <button style="background:#f39c12; color:white; padding:4px 10px;" onclick="deleteSelectedHistory()">删除选中</button>
-                <button style="background:#e74c3c; color:white; padding:4px 10px;" onclick="clearAllHistory()">清空全部历史</button>
-                <button style="background:#2ecc71; color:white; padding:4px 10px;" onclick="restoreDeletedHistory()">恢复最近删除</button>
-            </div>
-        </div>
-        <div id="historyContent" style="flex:1; overflow-y:auto;"></div>
-    </div>
-
 </div>
 
 <script>
@@ -261,6 +262,27 @@
     // ========== 工具 ==========
     function padZero(n) { return n<10 ? '0'+n : ''+n; }
     function formatDiff(d) { return (d==null || isNaN(d)) ? '' : (d>=0 ? '+' : '') + d; }
+
+    // ========== 微信防弹跳修复 ==========
+    function fixInputFocus() {
+        // 聚焦后强制将滚动条归零，防止键盘弹出时页面跳动
+        setTimeout(function() {
+            window.scrollTo(0, 0);
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+            var mc = document.getElementById('mainContent');
+            if (mc) mc.scrollTop = 0;
+        }, 100);
+    }
+    // 全局监听聚焦事件
+    document.addEventListener('focusin', function(e) {
+        if (e.target.tagName === 'INPUT') {
+            fixInputFocus();
+        }
+    });
+    document.addEventListener('focusout', function() {
+        window.scrollTo(0, 0);
+    });
 
     // ========== 页面切换 ==========
     function showPage(id) {
@@ -568,12 +590,18 @@
         o.style.display = 'none';
     }
 
+    // ========== 自适应缩放（微信安全） ==========
     function resizeApp() {
         var sw = window.innerWidth, sh = window.innerHeight;
         var scale = Math.min(sw / 480, sh / 800);
         document.documentElement.style.setProperty('--scale', scale);
+        // 强制滚动到顶部，避免微信的位移
+        window.scrollTo(0, 0);
     }
     window.addEventListener('resize', resizeApp);
+    window.addEventListener('orientationchange', function() {
+        setTimeout(resizeApp, 300);
+    });
 
     window.onload = function() {
         resizeApp();
