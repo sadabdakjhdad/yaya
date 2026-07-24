@@ -55,10 +55,13 @@
             margin-left: 4px;
         }
 
+        /* 下拉框调整文字靠左 */
         .cust-select { position: relative; display: inline-block; }
         .cust-select input {
             padding: 2px 4px; font-size: 15px; border: 1px solid #aaa;
-            text-align: center; background: white; color: black; cursor: pointer;
+            text-align: left;          /* 左对齐 */
+            padding-left: 8px;        /* 增加左内边距让文字不贴边 */
+            background: white; color: black; cursor: pointer;
             box-sizing: border-box; height: 34px;
         }
         .cust-select .dropdown-btn {
@@ -123,23 +126,23 @@
         <div id="mainPage" class="page active">
             <div id="bgLayer"></div>
             <div id="mainContent">
-                <!-- 顶部按钮：设置历史在左，总量在右 (row-reverse) -->
-                <div style="display:flex; flex-direction:row-reverse; justify-content:space-between; align-items:center; margin-bottom:40px; margin-top:40px;">
-                    <button id="totalBtn" style="background:white; padding:6px 12px; font-weight:bold; font-size:18px; height:38px; line-height:1; margin-right:15px;" onclick="showPage('totalPage')">矿物总量：0</button>
-                    <div style="display:flex; gap:6px; align-items:center; margin-left:-60px;">
+                <!-- 顶部按钮：总量在左，设置、历史紧靠其右侧 -->
+                <div style="display:flex; align-items:center; margin-bottom:40px; margin-top:40px;">
+                    <button id="totalBtn" style="background:white; padding:6px 12px; font-weight:bold; font-size:18px; height:38px; line-height:1; margin-left:15px;" onclick="showPage('totalPage')">矿物总量：0</button>
+                    <div style="display:flex; gap:6px; align-items:center; margin-left:15px;">
                         <button style="font-size:28px; background:transparent; border:none; cursor:pointer; width:36px; height:36px;" onclick="showPage('settingsPage')">⚙️</button>
                         <button style="font-size:28px; background:transparent; border:none; cursor:pointer; width:36px; height:36px;" onclick="showPage('historyPage')">⏰</button>
                     </div>
                 </div>
 
-                <!-- 第一行：日期左移，用时不动 -->
+                <!-- 第一行：日期 | 用时 缩短间距 -->
                 <div style="display:flex; align-items:center; margin-bottom:25px;">
-                    <div style="display:flex; align-items:center; margin-left:-10px; margin-right:20px;">
-                        <label style="font-weight:bold; font-size:16px; width:50px;">日期：</label>
-                        <input id="dateVar" class="entry-field" style="width:100px; height:34px;" readonly>
+                    <div style="display:flex; align-items:center; margin-right:25px;">
+                        <label style="font-weight:bold; font-size:16px; width:auto; margin-right:2px;">日期：</label>
+                        <input id="dateVar" class="entry-field" style="width:100px; height:34px; text-align:left; padding-left:8px;" readonly>
                     </div>
                     <div style="display:flex; align-items:center;">
-                        <label style="font-weight:bold; font-size:16px; width:50px;">用时：</label>
+                        <label style="font-weight:bold; font-size:16px; width:auto; margin-right:2px;">用时：</label>
                         <div class="cust-select">
                             <input id="timeInput" style="width:120px;" onfocus="this.select()">
                             <div class="dropdown-btn" onclick="toggleDropdown(this)">▼</div>
@@ -152,10 +155,10 @@
                     </div>
                 </div>
 
-                <!-- 第二行：精灵左移，地区左移 -->
+                <!-- 第二行：精灵 | 地区 缩短间距 -->
                 <div style="display:flex; align-items:center; margin-bottom:25px;">
-                    <div style="display:flex; align-items:center; margin-left:-10px; margin-right:20px;">
-                        <label style="font-weight:bold; font-size:16px; width:50px;">精灵：</label>
+                    <div style="display:flex; align-items:center; margin-right:25px;">
+                        <label style="font-weight:bold; font-size:16px; width:auto; margin-right:2px;">精灵：</label>
                         <div class="cust-select">
                             <input id="pokemonInput" style="width:110px;">
                             <div class="dropdown-btn" onclick="toggleDropdown(this)">▼</div>
@@ -164,8 +167,8 @@
                             </div>
                         </div>
                     </div>
-                    <div style="display:flex; align-items:center; margin-left:-10px;">
-                        <label style="font-weight:bold; font-size:16px; width:50px;">地区：</label>
+                    <div style="display:flex; align-items:center;">
+                        <label style="font-weight:bold; font-size:16px; width:auto; margin-right:2px;">地区：</label>
                         <div class="cust-select">
                             <input id="regionInput" style="width:120px;">
                             <div class="dropdown-btn" onclick="toggleDropdown(this)">▼</div>
@@ -204,7 +207,7 @@
 
                 <!-- 备注行 -->
                 <div style="display:flex; align-items:center; margin-bottom:25px; padding-left:10px;">
-                    <label style="font-weight:bold; font-size:16px; width:50px;">备注：</label>
+                    <label style="font-weight:bold; font-size:16px; width:auto; margin-right:2px;">备注：</label>
                     <input id="noteInput" class="entry-field" style="width:220px; height:34px; font-weight:normal;" placeholder="选填">
                 </div>
 
@@ -243,7 +246,7 @@
             </div>
             <div>
                 <strong>数据管理：</strong>
-                <button style="background:#e74c3c; color:white; padding:8px 16px; margin-top:10px;" onclick="clearAllData()">清空所有数据（含总量）</button>
+                <button style="background:#e74c3c; color:white; padding:8px 16px; margin-top:10px;" onclick="clearAllData()">清空所有数据</button>
             </div>
         </div>
 
@@ -481,7 +484,7 @@
         saveData(); updateTotalLabel(); refreshTable(); alert('已删除'); buildHistory();
     }
     function clearAllHistory() {
-        if(!confirm('清空全部历史？总量不变。')) return;
+        if(!confirm('清空全部历史。')) return;
         loadData(); var recs = data.filter(function(r){ return r.type === 'record'; });
         deletedRecords = deletedRecords.concat(recs);
         data = data.filter(function(r){ return r.type !== 'record'; });
