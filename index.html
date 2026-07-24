@@ -5,19 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, shrink-to-fit=no">
     <title>矿物跑量统计 · 牙牙大王</title>
     <style>
-        :root {
-            --scale: 1;
-            --design-w: 480;
-            --design-h: 800;
-        }
+        :root { --scale: 1; --design-w: 480; --design-h: 800; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html, body {
             width: 100%; height: 100%;
             overflow: hidden;
             font-family: "微软雅黑", "Microsoft YaHei", sans-serif;
             background: white;
-            position: fixed;
-            top: 0; left: 0;
+            position: fixed; top: 0; left: 0;
         }
         body { display: flex; justify-content: center; align-items: center; }
         #app-wrapper {
@@ -27,8 +22,7 @@
             transform-origin: center center;
             background: white;
             overflow: hidden;
-            user-select: none;
-            color: black;
+            user-select: none; color: black;
         }
         .page {
             position: absolute; top:0; left:0; width:100%; height:100%;
@@ -37,43 +31,40 @@
         .page.active { display: block; }
 
         #mainPage { background: white; }
-        #bgLayer {
-            position: absolute; top:0; left:0; width:100%; height:100%;
-            background-color: white; z-index: 0;
-        }
+        #bgLayer { position: absolute; top:0; left:0; width:100%; height:100%; background-color: white; z-index: 0; }
         #mainContent {
             position: relative; z-index: 1; width: 100%; height: 100%;
-            padding: 10px;
+            padding: 8px;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             -ms-overflow-style: none; scrollbar-width: none;
         }
         #mainContent::-webkit-scrollbar { display: none; }
 
-        .icon-block {
-            display: inline-block; width: 56px; height: 56px;
-            border: 1px solid #ccc; border-radius: 6px;
-        }
         .entry-field {
             font-size: 16px; font-weight: bold; text-align: center;
-            border: 1px solid #aaa; padding: 4px; background: white; color: black;
+            border: 1px solid #aaa; padding: 2px 4px; background: white; color: black;
+        }
+        .icon-block {
+            display: inline-block; width: 38px; height: 38px;
+            border: 1px solid #ccc; border-radius: 4px; margin-right: 5px;
         }
         .restore-btn {
-            font-size: 18px; font-weight: bold; background: #ffb6c1; color: white;
-            border: none; width: 45px; height: 45px; cursor: pointer; border-radius: 6px;
+            font-size: 15px; font-weight: bold; background: #ffb6c1; color: white;
+            border: none; width: 32px; height: 32px; cursor: pointer; border-radius: 4px;
+            margin-left: 4px;
         }
 
         .cust-select { position: relative; display: inline-block; }
         .cust-select input {
-            padding: 4px 8px; font-size: 16px; border: 1px solid #aaa;
+            padding: 2px 4px; font-size: 15px; border: 1px solid #aaa;
             text-align: center; background: white; color: black; cursor: pointer;
-            box-sizing: border-box;
-            height: 40px;
+            box-sizing: border-box; height: 34px;
         }
         .cust-select .dropdown-btn {
             position: absolute; right: 0; top: 0; height: 100%;
-            width: 28px; background: #eee; border: 1px solid #aaa;
-            border-left: none; cursor: pointer; font-size: 14px;
+            width: 26px; background: #eee; border: 1px solid #aaa;
+            border-left: none; cursor: pointer; font-size: 12px;
             display: flex; align-items: center; justify-content: center;
         }
         .cust-select .options {
@@ -81,31 +72,30 @@
             background: white; border: 1px solid #aaa;
             max-height: 150px; overflow-y: auto; z-index: 20; display: none;
         }
-        .cust-select .options div { padding: 6px 8px; font-size: 15px; cursor: pointer; }
+        .cust-select .options div { padding: 5px 6px; font-size: 14px; cursor: pointer; }
         .cust-select .options div:hover { background: #ffb6c1; }
 
         .result-list {
             background: white; border: 2px solid #ccc;
-            margin: 10px; padding: 10px;
+            margin: 8px 40px 8px 10px;
+            padding: 8px;
         }
         .result-row {
-            display: flex; padding: 14px 0;
+            display: flex; padding: 12px 0;
             border-bottom: 1px solid #eee;
-            font-size: 18px; font-weight: bold;
+            font-size: 17px; font-weight: bold;
         }
         .result-row:last-child { border-bottom: none; }
         .result-label {
             color: #ff69b4; font-weight: bold;
-            width: 70px; text-align: right; margin-right: 10px; white-space: nowrap;
+            width: 65px; text-align: right; margin-right: 8px; white-space: nowrap;
         }
         .result-value { color: black; font-weight: bold; }
 
         .total-entry { width: 80px; text-align: center; padding: 4px; font-size: 14px; }
 
-        #historyContent {
-            flex: 1; overflow-y: auto;
-            -ms-overflow-style: none; scrollbar-width: none;
-        }
+        /* 历史页面 */
+        #historyContent { flex: 1; overflow-y: auto; -ms-overflow-style: none; scrollbar-width: none; }
         #historyContent::-webkit-scrollbar { display: none; }
         .date-group { margin-bottom: 10px; }
         .date-title {
@@ -133,41 +123,98 @@
         <div id="mainPage" class="page active">
             <div id="bgLayer"></div>
             <div id="mainContent">
-                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:70px; margin-top:60px;">
-                    <button id="totalBtn" style="background:white; padding:8px 16px; font-weight:bold; font-size:20px; height:48px; line-height:1;" onclick="showPage('totalPage')">矿物总量：0</button>
-                    <div style="margin-right:45px; display:flex; gap:10px; align-items:center;">
-                        <button style="font-size:30px; background:transparent; border:none; cursor:pointer; width:40px; height:40px; line-height:1;" onclick="showPage('settingsPage')">⚙️</button>
-                        <button style="font-size:30px; background:transparent; border:none; cursor:pointer; width:40px; height:40px; line-height:1;" onclick="showPage('historyPage')">⏰</button>
+                <!-- 顶部按钮：设置历史在左，总量在右 (row-reverse) -->
+                <div style="display:flex; flex-direction:row-reverse; justify-content:space-between; align-items:center; margin-bottom:40px; margin-top:40px;">
+                    <button id="totalBtn" style="background:white; padding:6px 12px; font-weight:bold; font-size:18px; height:38px; line-height:1; margin-right:15px;" onclick="showPage('totalPage')">矿物总量：0</button>
+                    <div style="display:flex; gap:6px; align-items:center; margin-left:-60px;">
+                        <button style="font-size:28px; background:transparent; border:none; cursor:pointer; width:36px; height:36px;" onclick="showPage('settingsPage')">⚙️</button>
+                        <button style="font-size:28px; background:transparent; border:none; cursor:pointer; width:36px; height:36px;" onclick="showPage('historyPage')">⏰</button>
                     </div>
                 </div>
-                <div style="display:flex; justify-content:space-between;">
-                    <div style="width:200px;">
-                        <div style="margin-bottom:35px;"><label style="font-weight:bold;font-size:16px;">日期：</label><input id="dateVar" class="entry-field" style="width:80px; height:30px;" readonly></div>
-                        <div style="margin-bottom:35px;"><label style="font-weight:bold;font-size:16px;">用时：</label>
-                            <div class="cust-select"><input id="timeInput" style="width:90px;" readonly><div class="dropdown-btn" onclick="toggleDropdown(this)">▼</div><div class="options"><div onclick="selectDropdownValue(this)">1h</div><div onclick="selectDropdownValue(this)">2h</div><div onclick="selectDropdownValue(this)">3h</div><div onclick="selectDropdownValue(this)">4h</div><div onclick="selectDropdownValue(this)">5h</div><div onclick="selectDropdownValue(this)">6h</div><div onclick="selectDropdownValue(this)">7h</div><div onclick="selectDropdownValue(this)">8h</div><div onclick="selectDropdownValue(this)">9h</div><div onclick="selectDropdownValue(this)">10h</div></div></div>
-                        </div>
-                        <div style="margin-bottom:35px;"><label style="font-weight:bold;font-size:16px;">精灵：</label>
-                            <div class="cust-select"><input id="pokemonInput" style="width:110px;" readonly><div class="dropdown-btn" onclick="toggleDropdown(this)">▼</div><div class="options"><div onclick="selectDropdownValue(this)">六爱</div><div onclick="selectDropdownValue(this)">五爱</div><div onclick="selectDropdownValue(this)">卡六爱</div></div></div>
-                        </div>
-                        <div style="margin-bottom:35px;"><label style="font-weight:bold;font-size:16px;">地区：</label>
-                            <div class="cust-select"><input id="regionInput" style="width:140px;" readonly><div class="dropdown-btn" onclick="toggleDropdown(this)">▼</div><div class="options"><div onclick="selectDropdownValue(this)">风眠镇</div><div onclick="selectDropdownValue(this)">洛克里安</div><div onclick="selectDropdownValue(this)">淘晶镇</div></div></div>
-                        </div>
-                        <div style="margin-bottom:35px;"><label style="font-weight:bold;font-size:16px;">备注：</label>
-                            <input id="noteInput" class="entry-field" style="width:160px; height:40px; font-weight:normal;" placeholder="选填" readonly onclick="promptFor('noteInput','备注')">
+
+                <!-- 第一行：日期左移，用时不动 -->
+                <div style="display:flex; align-items:center; margin-bottom:25px;">
+                    <div style="display:flex; align-items:center; margin-left:-10px; margin-right:20px;">
+                        <label style="font-weight:bold; font-size:16px; width:50px;">日期：</label>
+                        <input id="dateVar" class="entry-field" style="width:100px; height:34px;" readonly>
+                    </div>
+                    <div style="display:flex; align-items:center;">
+                        <label style="font-weight:bold; font-size:16px; width:50px;">用时：</label>
+                        <div class="cust-select">
+                            <input id="timeInput" style="width:120px;" onfocus="this.select()">
+                            <div class="dropdown-btn" onclick="toggleDropdown(this)">▼</div>
+                            <div class="options">
+                                <div onclick="selectDropdownValue(this)">1h</div><div onclick="selectDropdownValue(this)">2h</div><div onclick="selectDropdownValue(this)">3h</div>
+                                <div onclick="selectDropdownValue(this)">4h</div><div onclick="selectDropdownValue(this)">5h</div><div onclick="selectDropdownValue(this)">6h</div>
+                                <div onclick="selectDropdownValue(this)">7h</div><div onclick="selectDropdownValue(this)">8h</div><div onclick="selectDropdownValue(this)">9h</div><div onclick="selectDropdownValue(this)">10h</div>
+                            </div>
                         </div>
                     </div>
-                    <div style="width:260px;">
-                        <div style="margin-bottom:35px;display:flex;align-items:center;"><div class="icon-block" style="background-color:#1a1a1a;"></div><input id="blackEntry" class="entry-field" style="width:160px;height:55px;margin:0 8px;font-size:22px;" readonly onclick="promptFor('blackEntry','黑矿')"><button class="restore-btn" onclick="restoreAndPrompt('black')">↺</button></div>
-                        <div style="margin-bottom:35px;display:flex;align-items:center;"><div class="icon-block" style="background-color:#f1c40f;"></div><input id="yellowEntry" class="entry-field" style="width:160px;height:55px;margin:0 8px;font-size:22px;" readonly onclick="promptFor('yellowEntry','黄矿')"><button class="restore-btn" onclick="restoreAndPrompt('yellow')">↺</button></div>
-                        <div style="margin-bottom:35px;display:flex;align-items:center;"><div class="icon-block" style="background-color:#2980b9;"></div><input id="blueEntry" class="entry-field" style="width:160px;height:55px;margin:0 8px;font-size:22px;" readonly onclick="promptFor('blueEntry','蓝矿')"><button class="restore-btn" onclick="restoreAndPrompt('blue')">↺</button></div>
-                        <div style="margin-bottom:35px;display:flex;align-items:center;"><div class="icon-block" style="background-color:#8e44ad;"></div><input id="purpleEntry" class="entry-field" style="width:160px;height:55px;margin:0 8px;font-size:22px;" readonly onclick="promptFor('purpleEntry','紫矿')"><button class="restore-btn" onclick="restoreAndPrompt('purple')">↺</button></div>
+                </div>
+
+                <!-- 第二行：精灵左移，地区左移 -->
+                <div style="display:flex; align-items:center; margin-bottom:25px;">
+                    <div style="display:flex; align-items:center; margin-left:-10px; margin-right:20px;">
+                        <label style="font-weight:bold; font-size:16px; width:50px;">精灵：</label>
+                        <div class="cust-select">
+                            <input id="pokemonInput" style="width:110px;">
+                            <div class="dropdown-btn" onclick="toggleDropdown(this)">▼</div>
+                            <div class="options">
+                                <div onclick="selectDropdownValue(this)">六爱</div><div onclick="selectDropdownValue(this)">五爱</div><div onclick="selectDropdownValue(this)">卡六爱</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display:flex; align-items:center; margin-left:-10px;">
+                        <label style="font-weight:bold; font-size:16px; width:50px;">地区：</label>
+                        <div class="cust-select">
+                            <input id="regionInput" style="width:120px;">
+                            <div class="dropdown-btn" onclick="toggleDropdown(this)">▼</div>
+                            <div class="options">
+                                <div onclick="selectDropdownValue(this)">风眠镇</div><div onclick="selectDropdownValue(this)">洛克里安</div><div onclick="selectDropdownValue(this)">淘晶镇</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div style="display:flex;justify-content:space-around;margin:25px 0;">
-                    <button style="background:#dcdcdc;color:black;padding:10px 18px;font-weight:bold;" onclick="clearResult()">清空表格</button>
-                    <button style="background:#ff69b4;color:white;padding:10px 18px;font-weight:bold;" onclick="recordToday()">生成</button>
-                    <button style="background:#ffb6c1;color:white;padding:10px 18px;font-weight:bold;" onclick="restoreAll()">全部恢复</button>
+
+                <!-- 矿物输入行 -->
+                <div style="display:flex; align-items:center; margin-bottom:18px; padding-left:10px;">
+                    <div class="icon-block" style="background-color:#1a1a1a;"></div>
+                    <input id="blackEntry" class="entry-field" style="width:150px; height:42px; font-size:20px; margin-right:4px;">
+                    <button class="restore-btn" onclick="restoreSingle('black')">↺</button>
+                    <span style="font-weight:bold; font-size:16px; margin-left:8px;">黑矿</span>
                 </div>
+                <div style="display:flex; align-items:center; margin-bottom:18px; padding-left:10px;">
+                    <div class="icon-block" style="background-color:#f1c40f;"></div>
+                    <input id="yellowEntry" class="entry-field" style="width:150px; height:42px; font-size:20px; margin-right:4px;">
+                    <button class="restore-btn" onclick="restoreSingle('yellow')">↺</button>
+                    <span style="font-weight:bold; font-size:16px; margin-left:8px;">黄矿</span>
+                </div>
+                <div style="display:flex; align-items:center; margin-bottom:18px; padding-left:10px;">
+                    <div class="icon-block" style="background-color:#2980b9;"></div>
+                    <input id="blueEntry" class="entry-field" style="width:150px; height:42px; font-size:20px; margin-right:4px;">
+                    <button class="restore-btn" onclick="restoreSingle('blue')">↺</button>
+                    <span style="font-weight:bold; font-size:16px; margin-left:8px;">蓝矿</span>
+                </div>
+                <div style="display:flex; align-items:center; margin-bottom:25px; padding-left:10px;">
+                    <div class="icon-block" style="background-color:#8e44ad;"></div>
+                    <input id="purpleEntry" class="entry-field" style="width:150px; height:42px; font-size:20px; margin-right:4px;">
+                    <button class="restore-btn" onclick="restoreSingle('purple')">↺</button>
+                    <span style="font-weight:bold; font-size:16px; margin-left:8px;">紫矿</span>
+                </div>
+
+                <!-- 备注行 -->
+                <div style="display:flex; align-items:center; margin-bottom:25px; padding-left:10px;">
+                    <label style="font-weight:bold; font-size:16px; width:50px;">备注：</label>
+                    <input id="noteInput" class="entry-field" style="width:220px; height:34px; font-weight:normal;" placeholder="选填">
+                </div>
+
+                <!-- 底部按钮：靠左聚拢 -->
+                <div style="display:flex; justify-content:flex-start; margin:20px 0; padding-left:10px; gap:10px;">
+                    <button style="background:#dcdcdc; color:black; padding:10px 16px; font-weight:bold;" onclick="clearResult()">清空表格</button>
+                    <button style="background:#ff69b4; color:white; padding:10px 16px; font-weight:bold;" onclick="recordToday()">生成</button>
+                    <button style="background:#ffb6c1; color:white; padding:10px 16px; font-weight:bold;" onclick="restoreAll()">全部恢复</button>
+                </div>
+
                 <div id="resultContainer" class="result-list"></div>
             </div>
         </div>
@@ -220,7 +267,6 @@
 </div>
 
 <script>
-    // ========== 数据存储 ==========
     var DATA_KEY = "mineral_app_data";
     var data = [];
     var lastInputs = { black:"", yellow:"", blue:"", purple:"" };
@@ -231,9 +277,7 @@
         data = stored ? JSON.parse(stored) : [];
         ensureTotal();
     }
-    function saveData() {
-        localStorage.setItem(DATA_KEY, JSON.stringify(data));
-    }
+    function saveData() { localStorage.setItem(DATA_KEY, JSON.stringify(data)); }
     function ensureTotal() {
         for(var i=0; i<data.length; i++) if(data[i].type === "total") return;
         var last = null;
@@ -254,38 +298,9 @@
         saveData();
     }
 
-    // ========== prompt 输入（屎山核心） ==========
-    function promptFor(id, label) {
-        var el = document.getElementById(id);
-        if (!el) return;
-        var current = el.value;
-        if (current === '' && lastInputs[id.replace('Entry','')]) {
-            current = lastInputs[id.replace('Entry','')];
-        }
-        var val = prompt(label ? '请输入' + label + '数量' : '请输入', current);
-        if (val !== null) {
-            el.value = val;
-        }
-    }
-    function restoreAndPrompt(mineral) {
-        var el = document.getElementById(mineral + 'Entry');
-        if (!el) return;
-        if (lastInputs[mineral] !== undefined && lastInputs[mineral] !== '') {
-            el.value = lastInputs[mineral];
-        }
-        var val = prompt('请输入' + mineral + '矿数量', el.value);
-        if (val !== null) {
-            el.value = val;
-        }
-    }
-    // 备注也用 prompt
-    // 已经在 onclick 中调用
-
-    // ========== 工具 ==========
     function padZero(n) { return n<10 ? '0'+n : ''+n; }
     function formatDiff(d) { return (d==null || isNaN(d)) ? '' : (d>=0 ? '+' : '') + d; }
 
-    // ========== 页面切换 ==========
     function showPage(id) {
         var pages = document.querySelectorAll('.page');
         for(var i=0; i<pages.length; i++) {
@@ -295,29 +310,17 @@
         var target = document.getElementById(id);
         if(target) {
             target.classList.add('active');
-            if(id === 'historyPage') {
-                target.style.display = 'flex';
-            } else {
-                target.style.display = 'block';
-            }
+            target.style.display = (id === 'historyPage') ? 'flex' : 'block';
         }
         if(id !== 'historyPage') {
             var hc = document.getElementById('historyContent');
             if(hc) hc.innerHTML = '';
         }
-        if(id === 'mainPage') {
-            updateDate();
-            updateTotalLabel();
-            refreshTable();
-        } else if(id === 'totalPage') {
-            loadData();
-            updateTotalInputs();
-        } else if(id === 'historyPage') {
-            buildHistory();
-        }
+        if(id === 'mainPage') { updateDate(); updateTotalLabel(); refreshTable(); }
+        else if(id === 'totalPage') { loadData(); updateTotalInputs(); }
+        else if(id === 'historyPage') { buildHistory(); }
     }
 
-    // ========== 主界面 ==========
     function clearInputs() {
         document.getElementById('blackEntry').value = '';
         document.getElementById('yellowEntry').value = '';
@@ -328,24 +331,14 @@
         document.getElementById('regionInput').value = '';
         document.getElementById('noteInput').value = '';
     }
-    function updateDate() {
-        var d = new Date();
-        document.getElementById('dateVar').value = (d.getMonth()+1) + '.' + d.getDate();
-    }
-    function updateTotalLabel() {
-        var t = getTotal();
-        document.getElementById('totalBtn').innerHTML = '矿物总量：' + (t.black + t.yellow + t.blue + t.purple);
-    }
+    function updateDate() { var d=new Date(); document.getElementById('dateVar').value = (d.getMonth()+1) + '.' + d.getDate(); }
+    function updateTotalLabel() { var t=getTotal(); document.getElementById('totalBtn').innerHTML = '矿物总量：' + (t.black+t.yellow+t.blue+t.purple); }
     function restoreSingle(m) {
-        // 仅用于全部恢复按钮，把上次值填入输入框
         var el = document.getElementById(m + 'Entry');
-        if(el && lastInputs[m] !== undefined && lastInputs[m] !== '') el.value = lastInputs[m];
+        if(lastInputs[m] !== undefined && lastInputs[m] !== '') el.value = lastInputs[m];
     }
     function restoreAll() { for(var m in lastInputs) restoreSingle(m); }
-    function clearResult() {
-        var c = document.getElementById('resultContainer');
-        if(c) c.innerHTML = '';
-    }
+    function clearResult() { var c=document.getElementById('resultContainer'); if(c) c.innerHTML = ''; }
     function refreshTable() {
         var container = document.getElementById('resultContainer');
         if(!container) return;
@@ -365,51 +358,36 @@
         container.innerHTML = html;
     }
 
-    // ========== 生成记录 ==========
     function recordToday() {
-        loadData();
-        var t = getTotal();
-
-        var b = parseInt(document.getElementById('blackEntry').value) || 0;
-        var y = parseInt(document.getElementById('yellowEntry').value) || 0;
-        var bl = parseInt(document.getElementById('blueEntry').value) || 0;
-        var p = parseInt(document.getElementById('purpleEntry').value) || 0;
-
-        if (isNaN(b)||isNaN(y)||isNaN(bl)||isNaN(p)) { alert('请输入有效整数'); return; }
-
+        loadData(); var t = getTotal();
+        var rawBlack = document.getElementById('blackEntry').value.trim();
+        var rawYellow = document.getElementById('yellowEntry').value.trim();
+        var rawBlue = document.getElementById('blueEntry').value.trim();
+        var rawPurple = document.getElementById('purpleEntry').value.trim();
+        var b = (rawBlack !== '' && !isNaN(parseInt(rawBlack))) ? parseInt(rawBlack) : (lastInputs.black !== '' && !isNaN(parseInt(lastInputs.black)) ? parseInt(lastInputs.black) : 0);
+        var y = (rawYellow !== '' && !isNaN(parseInt(rawYellow))) ? parseInt(rawYellow) : (lastInputs.yellow !== '' && !isNaN(parseInt(lastInputs.yellow)) ? parseInt(lastInputs.yellow) : 0);
+        var bl = (rawBlue !== '' && !isNaN(parseInt(rawBlue))) ? parseInt(rawBlue) : (lastInputs.blue !== '' && !isNaN(parseInt(lastInputs.blue)) ? parseInt(lastInputs.blue) : 0);
+        var p = (rawPurple !== '' && !isNaN(parseInt(rawPurple))) ? parseInt(rawPurple) : (lastInputs.purple !== '' && !isNaN(parseInt(lastInputs.purple)) ? parseInt(lastInputs.purple) : 0);
         var bd = b - t.black, yd = y - t.yellow, bld = bl - t.blue, pd = p - t.purple;
-
         var date = document.getElementById('dateVar').value.trim() || (new Date().getMonth()+1) + '.' + new Date().getDate();
         var dur = document.getElementById('timeInput').value.trim();
         var poke = document.getElementById('pokemonInput').value.trim();
         var reg = document.getElementById('regionInput').value.trim();
         var note = document.getElementById('noteInput').value.trim();
-
         lastInputs.black = b; lastInputs.yellow = y; lastInputs.blue = bl; lastInputs.purple = p;
-
         var now = new Date();
         var time = padZero(now.getHours()) + ':' + padZero(now.getMinutes()) + ':' + padZero(now.getSeconds());
         var rec = {
-            type: "record",
-            date: date,
-            time: time,
-            duration: dur,
-            pokemon: poke,
-            region: reg,
+            type: "record", date: date, time: time, duration: dur, pokemon: poke, region: reg,
             black: b, yellow: y, blue: bl, purple: p,
             blackDiff: bd, yellowDiff: yd, blueDiff: bld, purpleDiff: pd,
             note: note,
             real_time: now.getFullYear() + '-' + (now.getMonth()+1) + '-' + now.getDate() + ' ' + time
         };
-        data.push(rec);
-        updateTotal(b, y, bl, p);
-        saveData();
-        clearInputs();
-        refreshTable();
-        updateTotalLabel();
+        data.push(rec); updateTotal(b, y, bl, p); saveData();
+        clearInputs(); refreshTable(); updateTotalLabel();
     }
 
-    // ========== 总量页面 ==========
     function updateTotalInputs() {
         var t = getTotal();
         document.getElementById('totalBlack').value = t.black;
@@ -426,34 +404,22 @@
         data = data.filter(function(r){ return r.type !== 'init'; });
         var now = new Date();
         data.push({
-            type: "init",
-            date: now.getFullYear() + '-' + (now.getMonth()+1) + '-' + now.getDate(),
-            time: padZero(now.getHours()) + ':' + padZero(now.getMinutes()) + ':' + padZero(now.getSeconds()),
-            black: b, yellow: y, blue: bl, purple: p,
-            blackDiff: 0, yellowDiff: 0, blueDiff: 0, purpleDiff: 0
+            type: "init", date: now.getFullYear()+'-'+(now.getMonth()+1)+'-'+now.getDate(),
+            time: padZero(now.getHours())+':'+padZero(now.getMinutes())+':'+padZero(now.getSeconds()),
+            black: b, yellow: y, blue: bl, purple: p, blackDiff: 0, yellowDiff: 0, blueDiff: 0, purpleDiff: 0
         });
-        saveData();
-        clearInputs();
-        updateTotalLabel();
-        refreshTable();
-        alert('库存已更新！');
-        showPage('mainPage');
+        saveData(); clearInputs(); updateTotalLabel(); refreshTable();
+        alert('库存已更新！'); showPage('mainPage');
     }
 
-    // ========== 设置页面 ==========
     function clearAllData() {
         if(confirm('清空所有数据？总量、记录均删除。')) {
-            data = [];
-            saveData();
-            clearInputs();
-            updateDate();
-            updateTotalLabel();
-            refreshTable();
+            data = []; saveData();
+            clearInputs(); updateDate(); updateTotalLabel(); refreshTable();
             alert('数据已清空');
         }
     }
 
-    // ========== 历史记录 ==========
     function buildHistory() {
         var container = document.getElementById('historyContent');
         if(!container) return;
@@ -475,9 +441,7 @@
         for(var j=0; j<dates.length; j++) {
             var date = dates[j];
             var recs = groups[date];
-            html += '<div class="date-group">';
-            html += '<div class="date-title" onclick="toggleDateGroup(this)">' + date + '（' + recs.length + '单）</div>';
-            html += '<div class="records-list" style="display:none;">';
+            html += '<div class="date-group"><div class="date-title" onclick="toggleDateGroup(this)">' + date + '（' + recs.length + '单）</div><div class="records-list" style="display:none;">';
             for(var k=0; k<recs.length; k++) {
                 var rec = recs[k];
                 var globalIdx = records.indexOf(rec) + 1;
@@ -485,21 +449,14 @@
                 var line1 = 'No.' + globalIdx + ' 时间：' + time + ' 用时：' + (rec.duration||'') + ' 精灵：' + (rec.pokemon||'') + ' 地区：' + (rec.region||'');
                 var line2 = '黑矿：' + formatDiff(rec.blackDiff) + ' 黄矿：' + formatDiff(rec.yellowDiff) + ' 蓝矿：' + formatDiff(rec.blueDiff) + ' 紫矿：' + formatDiff(rec.purpleDiff);
                 var noteHtml = rec.note ? ' <span class="note-text" onclick="editNote(' + records.indexOf(rec) + ')">📝' + rec.note + '</span>' : ' <span class="note-text" onclick="editNote(' + records.indexOf(rec) + ')" style="color:#aaa;">+备注</span>';
-                html += '<div class="history-item">';
-                html += '<input type="checkbox" class="history-check" value="' + records.indexOf(rec) + '">';
-                html += '<div>' + line1 + noteHtml + '</div>';
-                html += '<div style="color:#555;">' + line2 + '</div>';
-                html += '</div>';
+                html += '<div class="history-item"><input type="checkbox" class="history-check" value="' + records.indexOf(rec) + '"><div>' + line1 + noteHtml + '</div><div style="color:#555;">' + line2 + '</div></div>';
             }
             html += '</div></div>';
         }
         container.innerHTML = html;
         document.getElementById('selectAllCheck').checked = false;
     }
-    function toggleDateGroup(el) {
-        var list = el.nextElementSibling;
-        if(list) list.style.display = (list.style.display === 'none' || list.style.display === '') ? 'block' : 'none';
-    }
+    function toggleDateGroup(el) { var list = el.nextElementSibling; if(list) list.style.display = (list.style.display === 'none' || list.style.display === '') ? 'block' : 'none'; }
     function editNote(index) {
         loadData();
         var records = data.filter(function(r){ return r.type === 'record'; });
@@ -507,18 +464,10 @@
         if(index >= 0 && index < records.length) {
             var rec = records[index];
             var newNote = prompt('请输入备注（可留空）：', rec.note || '');
-            if(newNote !== null) {
-                rec.note = newNote.trim();
-                saveData();
-                buildHistory();
-                refreshTable();
-            }
+            if(newNote !== null) { rec.note = newNote.trim(); saveData(); buildHistory(); refreshTable(); }
         }
     }
-    function toggleSelectAllHistory(cb) {
-        var checks = document.querySelectorAll('.history-check');
-        for(var i=0; i<checks.length; i++) checks[i].checked = cb.checked;
-    }
+    function toggleSelectAllHistory(cb) { var checks = document.querySelectorAll('.history-check'); for(var i=0; i<checks.length; i++) checks[i].checked = cb.checked; }
     function deleteSelectedHistory() {
         var checks = document.querySelectorAll('.history-check:checked');
         if(checks.length === 0) { alert('请选择记录'); return; }
@@ -527,60 +476,33 @@
         var records = data.filter(function(r){ return r.type === 'record'; });
         records.sort(function(a,b){ return (b.real_time||'').localeCompare(a.real_time||''); });
         var toDelete = [];
-        for(var i=0; i<checks.length; i++) {
-            var idx = parseInt(checks[i].value);
-            if(!isNaN(idx) && idx >= 0 && idx < records.length) toDelete.push(records[idx]);
-        }
-        for(var j=0; j<toDelete.length; j++) {
-            deletedRecords.push(toDelete[j]);
-            data = data.filter(function(r){ return r !== toDelete[j]; });
-        }
-        saveData();
-        updateTotalLabel();
-        refreshTable();
-        alert('已删除');
-        buildHistory();
+        for(var i=0; i<checks.length; i++) { var idx = parseInt(checks[i].value); if(!isNaN(idx) && idx >= 0 && idx < records.length) toDelete.push(records[idx]); }
+        for(var j=0; j<toDelete.length; j++) { deletedRecords.push(toDelete[j]); data = data.filter(function(r){ return r !== toDelete[j]; }); }
+        saveData(); updateTotalLabel(); refreshTable(); alert('已删除'); buildHistory();
     }
     function clearAllHistory() {
         if(!confirm('清空全部历史？总量不变。')) return;
-        loadData();
-        var recs = data.filter(function(r){ return r.type === 'record'; });
+        loadData(); var recs = data.filter(function(r){ return r.type === 'record'; });
         deletedRecords = deletedRecords.concat(recs);
         data = data.filter(function(r){ return r.type !== 'record'; });
-        saveData();
-        updateTotalLabel();
-        refreshTable();
-        alert('历史已清空');
-        buildHistory();
+        saveData(); updateTotalLabel(); refreshTable(); alert('历史已清空'); buildHistory();
     }
     function restoreDeletedHistory() {
         if(deletedRecords.length === 0) { alert('没有可恢复的记录'); return; }
         data = data.concat(deletedRecords);
         data.sort(function(a,b){ return (b.real_time||'').localeCompare(a.real_time||''); });
-        saveData();
-        deletedRecords = [];
-        refreshTable();
-        updateTotalLabel();
-        alert('已恢复');
-        buildHistory();
+        saveData(); deletedRecords = []; refreshTable(); updateTotalLabel(); alert('已恢复'); buildHistory();
     }
 
     function toggleDropdown(btn) {
         var p = btn.parentNode, o = p.querySelector('.options');
         if(o) {
             o.style.display = (o.style.display === 'block') ? 'none' : 'block';
-            document.addEventListener('click', function h(e) {
-                if(!p.contains(e.target)) {
-                    o.style.display = 'none';
-                    document.removeEventListener('click', h);
-                }
-            });
+            document.addEventListener('click', function h(e) { if(!p.contains(e.target)) { o.style.display = 'none'; document.removeEventListener('click', h); } });
         }
     }
     function selectDropdownValue(div) {
-        var v = div.innerHTML;
-        var o = div.parentNode;
-        var inp = o.parentNode.querySelector('input');
+        var v = div.innerHTML, o = div.parentNode, inp = o.parentNode.querySelector('input');
         if(inp) inp.value = v;
         o.style.display = 'none';
     }
