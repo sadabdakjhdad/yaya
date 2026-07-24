@@ -19,14 +19,9 @@
             position: fixed;
             top: 0; left: 0;
         }
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+        body { display: flex; justify-content: center; align-items: center; }
         #app-wrapper {
-            width: 480px;
-            height: 800px;
+            width: 480px; height: 800px;
             position: relative;
             transform: scale(var(--scale));
             transform-origin: center center;
@@ -107,6 +102,46 @@
 
         .total-entry { width: 80px; text-align: center; padding: 4px; font-size: 14px; }
 
+        /* 悬浮输入层 */
+        .input-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.3);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .input-overlay.active { display: flex; }
+        .input-dialog {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            width: 300px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        .input-dialog input {
+            width: 100%;
+            height: 50px;
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
+            border: 1px solid #aaa;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+        .input-dialog button {
+            margin: 5px;
+            padding: 8px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .btn-confirm { background: #ff69b4; color: white; }
+        .btn-cancel { background: #ccc; color: black; }
+
         #historyContent {
             flex: 1; overflow-y: auto;
             -ms-overflow-style: none; scrollbar-width: none;
@@ -132,6 +167,18 @@
     </style>
 </head>
 <body>
+<!-- 全局悬浮输入层 -->
+<div class="input-overlay" id="inputOverlay">
+    <div class="input-dialog">
+        <h3 id="inputLabel">请输入数量</h3>
+        <input type="number" id="overlayInput" inputmode="numeric" pattern="[0-9]*" onfocus="this.select()">
+        <div>
+            <button class="btn-confirm" onclick="confirmOverlayInput()">确认</button>
+            <button class="btn-cancel" onclick="cancelOverlayInput()">取消</button>
+        </div>
+    </div>
+</div>
+
 <div id="app-wrapper">
     <div id="app-container">
         <!-- 主界面 -->
@@ -149,23 +196,23 @@
                     <div style="width:200px;">
                         <div style="margin-bottom:35px;"><label style="font-weight:bold;font-size:16px;">日期：</label><input id="dateVar" class="entry-field" style="width:80px; height:30px;" readonly></div>
                         <div style="margin-bottom:35px;"><label style="font-weight:bold;font-size:16px;">用时：</label>
-                            <div class="cust-select"><input id="timeInput" style="width:90px;" onfocus="this.select();fixInputFocus()"><div class="dropdown-btn" onclick="toggleDropdown(this)">▼</div><div class="options"><div onclick="selectDropdownValue(this)">1h</div><div onclick="selectDropdownValue(this)">2h</div><div onclick="selectDropdownValue(this)">3h</div><div onclick="selectDropdownValue(this)">4h</div><div onclick="selectDropdownValue(this)">5h</div><div onclick="selectDropdownValue(this)">6h</div><div onclick="selectDropdownValue(this)">7h</div><div onclick="selectDropdownValue(this)">8h</div><div onclick="selectDropdownValue(this)">9h</div><div onclick="selectDropdownValue(this)">10h</div></div></div>
+                            <div class="cust-select"><input id="timeInput" style="width:90px;"><div class="dropdown-btn" onclick="toggleDropdown(this)">▼</div><div class="options"><div onclick="selectDropdownValue(this)">1h</div><div onclick="selectDropdownValue(this)">2h</div><div onclick="selectDropdownValue(this)">3h</div><div onclick="selectDropdownValue(this)">4h</div><div onclick="selectDropdownValue(this)">5h</div><div onclick="selectDropdownValue(this)">6h</div><div onclick="selectDropdownValue(this)">7h</div><div onclick="selectDropdownValue(this)">8h</div><div onclick="selectDropdownValue(this)">9h</div><div onclick="selectDropdownValue(this)">10h</div></div></div>
                         </div>
                         <div style="margin-bottom:35px;"><label style="font-weight:bold;font-size:16px;">精灵：</label>
-                            <div class="cust-select"><input id="pokemonInput" style="width:110px;" onfocus="fixInputFocus()"><div class="dropdown-btn" onclick="toggleDropdown(this)">▼</div><div class="options"><div onclick="selectDropdownValue(this)">六爱</div><div onclick="selectDropdownValue(this)">五爱</div><div onclick="selectDropdownValue(this)">卡六爱</div></div></div>
+                            <div class="cust-select"><input id="pokemonInput" style="width:110px;"><div class="dropdown-btn" onclick="toggleDropdown(this)">▼</div><div class="options"><div onclick="selectDropdownValue(this)">六爱</div><div onclick="selectDropdownValue(this)">五爱</div><div onclick="selectDropdownValue(this)">卡六爱</div></div></div>
                         </div>
                         <div style="margin-bottom:35px;"><label style="font-weight:bold;font-size:16px;">地区：</label>
-                            <div class="cust-select"><input id="regionInput" style="width:140px;" onfocus="fixInputFocus()"><div class="dropdown-btn" onclick="toggleDropdown(this)">▼</div><div class="options"><div onclick="selectDropdownValue(this)">风眠镇</div><div onclick="selectDropdownValue(this)">洛克里安</div><div onclick="selectDropdownValue(this)">淘晶镇</div></div></div>
+                            <div class="cust-select"><input id="regionInput" style="width:140px;"><div class="dropdown-btn" onclick="toggleDropdown(this)">▼</div><div class="options"><div onclick="selectDropdownValue(this)">风眠镇</div><div onclick="selectDropdownValue(this)">洛克里安</div><div onclick="selectDropdownValue(this)">淘晶镇</div></div></div>
                         </div>
                         <div style="margin-bottom:35px;"><label style="font-weight:bold;font-size:16px;">备注：</label>
-                            <input id="noteInput" class="entry-field" style="width:160px; height:40px; font-weight:normal;" placeholder="选填" onfocus="fixInputFocus()">
+                            <input id="noteInput" class="entry-field" style="width:160px; height:40px; font-weight:normal;" placeholder="选填" readonly onclick="openOverlayFor('noteInput')">
                         </div>
                     </div>
                     <div style="width:260px;">
-                        <div style="margin-bottom:35px;display:flex;align-items:center;"><div class="icon-block" style="background-color:#1a1a1a;"></div><input id="blackEntry" class="entry-field" style="width:160px;height:55px;margin:0 8px;font-size:22px;" onfocus="fixInputFocus()"><button class="restore-btn" onclick="restoreSingle('black')">↺</button></div>
-                        <div style="margin-bottom:35px;display:flex;align-items:center;"><div class="icon-block" style="background-color:#f1c40f;"></div><input id="yellowEntry" class="entry-field" style="width:160px;height:55px;margin:0 8px;font-size:22px;" onfocus="fixInputFocus()"><button class="restore-btn" onclick="restoreSingle('yellow')">↺</button></div>
-                        <div style="margin-bottom:35px;display:flex;align-items:center;"><div class="icon-block" style="background-color:#2980b9;"></div><input id="blueEntry" class="entry-field" style="width:160px;height:55px;margin:0 8px;font-size:22px;" onfocus="fixInputFocus()"><button class="restore-btn" onclick="restoreSingle('blue')">↺</button></div>
-                        <div style="margin-bottom:35px;display:flex;align-items:center;"><div class="icon-block" style="background-color:#8e44ad;"></div><input id="purpleEntry" class="entry-field" style="width:160px;height:55px;margin:0 8px;font-size:22px;" onfocus="fixInputFocus()"><button class="restore-btn" onclick="restoreSingle('purple')">↺</button></div>
+                        <div style="margin-bottom:35px;display:flex;align-items:center;"><div class="icon-block" style="background-color:#1a1a1a;"></div><input id="blackEntry" class="entry-field" style="width:160px;height:55px;margin:0 8px;font-size:22px;" readonly onclick="openOverlayFor('blackEntry')"><button class="restore-btn" onclick="restoreSingle('black')">↺</button></div>
+                        <div style="margin-bottom:35px;display:flex;align-items:center;"><div class="icon-block" style="background-color:#f1c40f;"></div><input id="yellowEntry" class="entry-field" style="width:160px;height:55px;margin:0 8px;font-size:22px;" readonly onclick="openOverlayFor('yellowEntry')"><button class="restore-btn" onclick="restoreSingle('yellow')">↺</button></div>
+                        <div style="margin-bottom:35px;display:flex;align-items:center;"><div class="icon-block" style="background-color:#2980b9;"></div><input id="blueEntry" class="entry-field" style="width:160px;height:55px;margin:0 8px;font-size:22px;" readonly onclick="openOverlayFor('blueEntry')"><button class="restore-btn" onclick="restoreSingle('blue')">↺</button></div>
+                        <div style="margin-bottom:35px;display:flex;align-items:center;"><div class="icon-block" style="background-color:#8e44ad;"></div><input id="purpleEntry" class="entry-field" style="width:160px;height:55px;margin:0 8px;font-size:22px;" readonly onclick="openOverlayFor('purpleEntry')"><button class="restore-btn" onclick="restoreSingle('purple')">↺</button></div>
                     </div>
                 </div>
                 <div style="display:flex;justify-content:space-around;margin:25px 0;">
@@ -259,30 +306,43 @@
         saveData();
     }
 
+    // ========== 悬浮输入层逻辑 ==========
+    var currentTargetId = null;
+    function openOverlayFor(targetId) {
+        currentTargetId = targetId;
+        var el = document.getElementById(targetId);
+        var overlay = document.getElementById('inputOverlay');
+        var overlayInput = document.getElementById('overlayInput');
+        var label = document.getElementById('inputLabel');
+        if (!el || !overlay) return;
+        overlayInput.value = el.value;
+        label.innerText = targetId.includes('note') ? '请输入备注' : '请输入数量';
+        overlay.classList.add('active');
+        overlayInput.focus();
+    }
+    function confirmOverlayInput() {
+        if (!currentTargetId) return;
+        var el = document.getElementById(currentTargetId);
+        var overlayInput = document.getElementById('overlayInput');
+        if (el) el.value = overlayInput.value;
+        closeOverlay();
+    }
+    function cancelOverlayInput() {
+        closeOverlay();
+    }
+    function closeOverlay() {
+        var overlay = document.getElementById('inputOverlay');
+        overlay.classList.remove('active');
+        currentTargetId = null;
+    }
+    // 点击背景关闭
+    document.getElementById('inputOverlay').addEventListener('click', function(e) {
+        if (e.target === this) cancelOverlayInput();
+    });
+
     // ========== 工具 ==========
     function padZero(n) { return n<10 ? '0'+n : ''+n; }
     function formatDiff(d) { return (d==null || isNaN(d)) ? '' : (d>=0 ? '+' : '') + d; }
-
-    // ========== 微信防弹跳修复 ==========
-    function fixInputFocus() {
-        // 聚焦后强制将滚动条归零，防止键盘弹出时页面跳动
-        setTimeout(function() {
-            window.scrollTo(0, 0);
-            document.body.scrollTop = 0;
-            document.documentElement.scrollTop = 0;
-            var mc = document.getElementById('mainContent');
-            if (mc) mc.scrollTop = 0;
-        }, 100);
-    }
-    // 全局监听聚焦事件
-    document.addEventListener('focusin', function(e) {
-        if (e.target.tagName === 'INPUT') {
-            fixInputFocus();
-        }
-    });
-    document.addEventListener('focusout', function() {
-        window.scrollTo(0, 0);
-    });
 
     // ========== 页面切换 ==========
     function showPage(id) {
@@ -368,19 +428,10 @@
         loadData();
         var t = getTotal();
 
-        var rawBlack = document.getElementById('blackEntry').value.trim();
-        var rawYellow = document.getElementById('yellowEntry').value.trim();
-        var rawBlue = document.getElementById('blueEntry').value.trim();
-        var rawPurple = document.getElementById('purpleEntry').value.trim();
-
-        var b = (rawBlack !== '' && !isNaN(parseInt(rawBlack))) ? parseInt(rawBlack)
-                : (lastInputs.black !== '' && !isNaN(parseInt(lastInputs.black)) ? parseInt(lastInputs.black) : 0);
-        var y = (rawYellow !== '' && !isNaN(parseInt(rawYellow))) ? parseInt(rawYellow)
-                : (lastInputs.yellow !== '' && !isNaN(parseInt(lastInputs.yellow)) ? parseInt(lastInputs.yellow) : 0);
-        var bl = (rawBlue !== '' && !isNaN(parseInt(rawBlue))) ? parseInt(rawBlue)
-                : (lastInputs.blue !== '' && !isNaN(parseInt(lastInputs.blue)) ? parseInt(lastInputs.blue) : 0);
-        var p = (rawPurple !== '' && !isNaN(parseInt(rawPurple))) ? parseInt(rawPurple)
-                : (lastInputs.purple !== '' && !isNaN(parseInt(lastInputs.purple)) ? parseInt(lastInputs.purple) : 0);
+        var b = parseInt(document.getElementById('blackEntry').value) || 0;
+        var y = parseInt(document.getElementById('yellowEntry').value) || 0;
+        var bl = parseInt(document.getElementById('blueEntry').value) || 0;
+        var p = parseInt(document.getElementById('purpleEntry').value) || 0;
 
         var bd = b - t.black, yd = y - t.yellow, bld = bl - t.blue, pd = p - t.purple;
 
@@ -590,18 +641,13 @@
         o.style.display = 'none';
     }
 
-    // ========== 自适应缩放（微信安全） ==========
+    // ========== 自适应缩放 ==========
     function resizeApp() {
         var sw = window.innerWidth, sh = window.innerHeight;
         var scale = Math.min(sw / 480, sh / 800);
         document.documentElement.style.setProperty('--scale', scale);
-        // 强制滚动到顶部，避免微信的位移
-        window.scrollTo(0, 0);
     }
     window.addEventListener('resize', resizeApp);
-    window.addEventListener('orientationchange', function() {
-        setTimeout(resizeApp, 300);
-    });
 
     window.onload = function() {
         resizeApp();
